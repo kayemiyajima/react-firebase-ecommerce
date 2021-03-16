@@ -1,0 +1,45 @@
+
+.resetPassword {
+    font-size: 1.5rem;
+    text-align: left;
+    padding: 1rem;
+}
+
+.socialSignin {
+    margin: 1rem auto;
+
+    .google-btn {
+        width: 100%;
+        font-size: 1.8rem;
+        line-height: 1;
+        font-weight: 300;
+        text-transform: uppercase;
+        justify-content: center;
+        color: white;
+        padding: 1rem 0;
+        margin: 0 auto;
+        background: gray;
+        border: 0;
+        outline: none;
+        cursor: pointer;
+
+        img{
+            height: 20px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        span {
+            vertical-align: middle;
+        }
+    }
+}
+
+.routing {
+    width: 100%;
+    display: block;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 1rem;
+    margin: 0 auto;
+}
