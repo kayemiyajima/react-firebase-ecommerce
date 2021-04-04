@@ -9,4 +9,4 @@ const Button = ({ children, ...otherProps }) => {
     );
 };
 
-export default Button
+export default Button;

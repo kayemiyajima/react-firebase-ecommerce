@@ -1,12 +1,16 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import './styles.scss';
-import { Link } from 'react-router-dom'
-import Logo from './../../assets/logo.png'
-import { useAuth } from './../../context/AuthContext'
+import { auth } from './../../firebase/utils';
+import { Link } from 'react-router-dom';
+import Logo from './../../assets/logo.png';
+
+const mapState = ({ user }) => ({
+    currentUser: user.currentUser
+});
 
 const Header = () => {
-    const { logout, currentUser } = useAuth();
-
+    const { currentUser } = useSelector(mapState);
     return (
         <header className='header'>
             <div className='wrap'>
@@ -25,7 +29,7 @@ const Header = () => {
                                 </Link>
                             </li>
                             <li>
-                                <span onClick={logout}>LogOut</span>
+                                <span onClick={() => auth.signOut()}>LogOut</span>
                             </li>
                         </ul> 
                     :
@@ -41,13 +45,12 @@ const Header = () => {
                                 </Link>
                             </li>
                         </ul>
-                    }
-                    
+                    }                    
                 </div>
 
             </div>
         </header>
     )
-}
+};
 
 export default Header;

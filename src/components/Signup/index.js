@@ -1,52 +1,54 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, withRouter, Link } from 'react-router-dom';
 import './styles.scss';
+import FormInput from './../Forms/FormInput';
 import Button from './../Forms/Button';
-import { handleUserProfile } from './../../firebase/utils';
-import { useAuth } from './../../context/AuthContext';
-import { useHistory, Link } from 'react-router-dom';
+import { signUpUser, resetAllAuthForms } from './../../redux/User/userActions';
 
 import AuthWrapper from './../AuthWrapper';
 import Alert from '@material-ui/lab/Alert';
 
+const mapState = ({ user }) => ({
+    signUpSuccess: user.signUpSuccess,
+    signUpError: user.signUpError
+})
 
 const Signup = () => {
-
-    const emailRef = useRef()
-    const passwordRef = useRef()
-    const passwordConfirmRef = useRef()
-    const { signup } = useAuth()
-    const [error, setError] = useState('')
+    const { signUpSuccess, signUpError } = useSelector(mapState);
+    const dispatch = useDispatch();
+    const history = useHistory();
     const [displayName, setDisplayName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [passwordConfirm, setPasswordConfirm] = useState('')
-    const history = useHistory()
+    const [error, setError] =useState('')
+
+    useEffect(() => {
+        if(signUpSuccess) {
+            clear();
+            dispatch(resetAllAuthForms());
+            history.push('/');
+        }
+    },[signUpSuccess]);
+
+    useEffect(() => {
+        if(signUpError) {
+            setError(signUpError)
+        }
+    },[signUpError]);
 
     const clear = () => {
         setDisplayName('')
         setEmail('')
         setPassword('')
         setPasswordConfirm('')
+        setError('')
     }
 
-    const handleSubmit = async (e) =>{
+    const handleSubmit = (e) =>{
         e.preventDefault()
-
-        if (passwordRef.current.value !== passwordConfirmRef.current.value) {
-            return setError('Passwords do not match')
-        }
-
-        try {
-            setError('')
-            const { user } = await signup(emailRef.current.value, passwordRef.current.value);
-            await handleUserProfile(user, { displayName });
-            clear();
-            history.push('/')
-        } catch {
-            setError('Failed to create an account')
-        }
-
-        // setLoading(false)
+        dispatch(signUpUser({ displayName, email, password, passwordConfirm }));
     }
 
     const configAuthWrapper = {
@@ -57,39 +59,40 @@ const Signup = () => {
         <>
             <AuthWrapper {...configAuthWrapper}>
                 <div className='formWrap'>
-                {error && <Alert variant="outlined" severity="error">{error}</Alert>}
+                    {error && <Alert variant="outlined" severity="error">{error}</Alert>}
                     <form onSubmit={handleSubmit}>
-                        <input 
+                        <FormInput
                             type='text'
                             name='displayName'
                             onChange={(e) => {setDisplayName(e.target.value)}}
                             value={displayName}
                             placeholder='Full name'
-                            required/>
-                        <input 
+                            required
+                        />
+                        <FormInput 
                             type='email'
                             name='email'
-                            ref={emailRef}
                             onChange={(e) => {setEmail(e.target.value)}}
                             value={email}
                             placeholder='Email'
-                            required/>
-                        <input 
+                            required
+                        />
+                        <FormInput 
                             type='password'
                             name='password'
-                            ref={passwordRef}
                             onChange={(e) => {setPassword(e.target.value)}}
                             value={password}
                             placeholder='Password'
-                            required/>
-                        <input 
+                            required
+                        />
+                        <FormInput
                             type='password'
                             name='passwordConfirm'
-                            ref={passwordConfirmRef}
                             onChange={(e) => {setPasswordConfirm(e.target.value)}}
                             value={passwordConfirm}
                             placeholder='Password Confirm'
-                            required/>
+                            required
+                        />
                         
                         <Button type='submit'>
                             Sign up
@@ -104,4 +107,4 @@ const Signup = () => {
     )
 }
 
-export default Signup;
+export default withRouter(Signup);

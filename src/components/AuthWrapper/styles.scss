@@ -4,6 +4,8 @@
     max-width: 40.0rem;
     border: 1px solid black;
     margin: 4rem auto 6rem;
+    background-color: #fff;
+    // z-index: 99;
 
     .wrap {
         padding: 10px;
@@ -17,20 +19,29 @@
             width: 100%;
             text-align: center;
             padding: 0;
-            margin: 0 auto 3rem;
+            margin: 2rem auto;
         }
 
-        input {
+
+        label {
             display: block;
             width: 100%;
+            text-align: left;
+            font-size: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        select {
+            display: inline-block;
+            width: auto;
             font-size: 1.5rem;
             line-height: 1;
             font-weight: 400;
             text-align: left;
-            padding: 10px 5px;
+            padding: 10px 0px;
             margin: 10px auto;
-            border: 1px solid #9e9e9e;
             outline: none;
+            cursor: pointer;
         }
     }
 }

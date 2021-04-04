@@ -5,7 +5,7 @@ const Footer = () => {
     return (
         <footer className='footer'>
             <div className='wrap'>
-                This website is a demo, created with React, Redux, Firebase and GraphQL
+                <p>This website is a demo, created with React, Redux, Firebase and GraphQL</p>
             </div>
         </footer>
     )

@@ -13,15 +13,18 @@ const app = firebase.initializeApp({
 
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
+
 export const googleProvider = new firebase.auth.GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
+
 export const handleUserProfile = async (userAuth, additionalData) => {
   if (!userAuth) return;
-  const { uid } = userAuth;
 
+  const { uid } = userAuth;
   const userRef = firestore.doc(`users/${uid}`);
   const snapshot = await userRef.get();
 
-  if (!snapshot.exist) {
+  if (!snapshot.exists) {
     const { displayName, email } = userAuth;
     const timestamp = new Date();
     const userRoles = ["user"];
@@ -31,13 +34,14 @@ export const handleUserProfile = async (userAuth, additionalData) => {
         email,
         createdDate: timestamp,
         userRoles,
-        ...additionalData,
+        ...additionalData
       });
     } catch (err) {
       console.log(err);
     }
   }
   return userRef;
+  //return this to use it to update LOCAL STATE of APP(redux)
 };
 
 export default app;

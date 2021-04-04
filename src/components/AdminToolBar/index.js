@@ -1,22 +1,19 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import './styles.scss';
-import { useAuth } from './../../context/AuthContext'
+import { checkUserIsAdmin } from './../../Utils';
+
+const mapState = ({ user }) => ({
+    currentUser: user.currentUser
+});
 
 const AdminToolBar = () => {
-    const { currentUser } = useAuth();
-    const checkUserIsAdmin = (currentUser) => {
-        if (!currentUser || !Array.isArray(currentUser.userRoles))
-            return false
-
-        const { userRoles } = currentUser;
-        if (userRoles.includes('admin'))
-        return true;
-    }
-
+    const { currentUser } = useSelector(mapState);
     const isAdmin = checkUserIsAdmin(currentUser);
-    if(!isAdmin) return null;
     
+   if(!isAdmin) return null;
+   
     return(
         <div className='adminToolBar'>
             <ul>

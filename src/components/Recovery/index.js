@@ -1,45 +1,61 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import './styles.scss';
-import { useAuth } from './../../context/AuthContext';
-import Button from './../Forms/Button';
+import { resetPassword, resetAllAuthForms } from './../../redux/User/userActions';
 
+import FormInput from './../Forms/FormInput';
+import Button from './../Forms/Button';
 import AuthWrapper from './../AuthWrapper';
 import Alert from '@material-ui/lab/Alert';
 
+const mapState =({ user }) => ({
+    resetPasswordSuccess: user.resetPasswordSuccess,
+    resetPasswordError: user.resetPasswordError
+})
+
 const Recovery = () => {
-    const { resetPassword } = useAuth();
-    const emailRef = useRef();
+    const { resetPasswordSuccess, resetPasswordError } = useSelector(mapState);
+    const dispatch = useDispatch();
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const [email, setEmail] = useState('');
 
-    const handleSubmit = async (e) =>{
-        e.preventDefault()
-
-        try {
-            setMessage('')
-            setError('')
-            await resetPassword(emailRef.current.value)
-            setMessage('Check your inbox for further instructions')
-        } catch {
-            setError('Failed to reset password')
+    useEffect(() => {
+        if(resetPasswordSuccess) {
+            setMessage('Check your inbox for further instructions');
+            dispatch(resetAllAuthForms());
         }
-    }
+    },[resetPasswordSuccess])
+
+    useEffect(() => {
+        if(resetPasswordError) {
+            setError(resetPasswordError)
+        }
+    },[resetPasswordError])
+
+    const handleSubmit = (e) =>{
+        e.preventDefault()
+        dispatch(resetPassword(email));
+    };
 
     const configAuthWrapper = {
         headline: 'Password Reset'
-    }
+    };
+
     return(
         <AuthWrapper {...configAuthWrapper}>
             <div className='formWrap'>
-            {error && <Alert severity="error">{error}</Alert>}
-            {message && <Alert severity="success">{message}</Alert>}
+                {error && <Alert severity="error">{error}</Alert>}
+                {message && <Alert severity="success">{message}</Alert>}
                 <form onSubmit={handleSubmit}>
-                    <input 
+                    <FormInput 
                         type='email'
                         name='email'
-                        ref={emailRef}
                         placeholder='Email'
-                        required/>                    
+                        value ={email}
+                        onChange={(e) => {setEmail(e.target.value)}}
+                        required
+                    />                    
                     <Button type='submit'>
                         Reset Password
                     </Button>
