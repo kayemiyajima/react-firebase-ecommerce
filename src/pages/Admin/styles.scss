@@ -1,0 +1,18 @@
+.admin {
+  height: 100%;
+
+  .controlPanel {
+    width: 25.0rem;
+    height: 100%;
+    border-right: 1px solid #d3d3d3;
+    position: fixed;
+    top: 108;
+    left: 0;
+  
+  }
+    
+  .adminContent {
+    margin-left: 25.0rem;
+    padding: 10px 10px;
+  }
+}  

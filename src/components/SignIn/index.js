@@ -1,38 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import './styles.scss';
-import Button from './../Forms/Button'
-import { useAuth } from './../../context/AuthContext'
-import { useHistory, Link } from 'react-router-dom';
+import { withRouter, Link, useHistory } from 'react-router-dom';
+import { signInUser, signInWithGoogle, resetAllAuthForms } from './../../redux/User/userActions';
 
+import FormInput from './../Forms/FormInput';
+import Button from './../Forms/Button';
 import AuthWrapper from './../AuthWrapper';
 import Alert from '@material-ui/lab/Alert';
 
-const SignIn = () => {
-    const { signInWithGoole, login } = useAuth();
-    const history = useHistory();
+const mapState = ({ user }) => ({
+    signInSuccess: user.signInSuccess,
+    signInError: user.signInError
+});
 
+const SignIn = () => {
+    const { signInError, signInSuccess } = useSelector(mapState);
+    const dispatch = useDispatch();
+    const history = useHistory();
     const [error, setError] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const clear = () => {
-        setEmail('')
-        setPassword('')
-    }
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            setError('')
-            await login(email, password).then(() => {
-                history.push('/')
-            });
+    useEffect(() => {
+        if(signInSuccess) {
             clear();
-        } catch {
-            setError('Failed to sign in')
+            dispatch(resetAllAuthForms());
+            history.push('/');
         }
-    }
+    }, [signInSuccess]);
+
+    useEffect(() => {
+        if(signInError) {
+            setError(signInError)
+        }
+    }, [signInError]);
+
+    const clear = () => {
+        setEmail('');
+        setPassword('');
+        setError('');
+    };
+
+    const handleSubmit = (e) => {
+         e.preventDefault();
+         dispatch(signInUser({ email, password }));
+    };
+
+    const handleGoogleSignIn = () => {
+        dispatch(signInWithGoogle());
+    };
 
     const configAuthWrapper = {
         headline: 'LogIn'
@@ -41,17 +58,18 @@ const SignIn = () => {
     return(
         <AuthWrapper {...configAuthWrapper}>
             <div className='formWrap'>
-            {error && <Alert variant="outlined" severity="error">{error}</Alert>}
+                {error && <Alert variant="outlined" severity="error">{error}</Alert>}
+
                 <form onSubmit={handleSubmit}>
                     <div className='manualSignin'>
-                        <input 
-                            type='email'
+                        <FormInput 
+                            type='email'    
                             name='email'
                             onChange={(e) =>setEmail(e.target.value)}
                             value={email}
                             placeholder='Email'
                             required/>
-                        <input 
+                        <FormInput
                             type='password'
                             name='password'
                             onChange={(e) =>setPassword(e.target.value)}
@@ -66,12 +84,12 @@ const SignIn = () => {
                         </Button>
                     </div>
                 </form>
-                        <div className='socialSignin'>
-                            <Button className='google-btn' onClick={signInWithGoole}>
-                                <img src="https://img.icons8.com/ios-filled/50/000000/google-logo.png" alt="google icon"/>
-                                <span>Sign in with Google</span>
-                            </Button>
-                        </div>
+                <div className='socialSignin'>
+                    <Button className='google-btn' onClick={handleGoogleSignIn}>
+                        <img src="https://img.icons8.com/ios-filled/50/000000/google-logo.png" alt="google icon"/>
+                        <span>Sign in with Google</span>
+                    </Button>
+                </div>
             </div>
             <div className='routing'>
                 Need an account? <Link to ='/registration'>Sign Up</Link>
@@ -80,4 +98,4 @@ const SignIn = () => {
     )
 };
 
-export default SignIn;
+export default withRouter(SignIn);
